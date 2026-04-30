@@ -1,0 +1,65 @@
+{
+  "meta": {
+    "title": "httping.io — HTTP 探测与诊断工具",
+    "description": "即时检查任意 URL 的 HTTP 状态码、响应时间、TTFB、重定向链路和 TLS 证书。开发者专用的免费在线 HTTP 诊断工具。"
+  },
+  "nav": {
+    "tool": "HTTP 检测",
+    "docs": "文档",
+    "github": "GitHub"
+  },
+  "hero": {
+    "badge": "免费开源",
+    "title": "HTTP Ping",
+    "titleHighlight": "诊断工具",
+    "subtitle": "即时探测任意 URL——状态码、响应时间、TTFB、重定向链路、TLS 证书、响应头。就像 ping，但针对 HTTP。",
+    "placeholder": "https://example.com",
+    "button": "检测",
+    "buttonLoading": "检测中...",
+    "exampleLabel": "试试看："
+  },
+  "results": {
+    "title": "检测结果",
+    "status": "HTTP 状态码",
+    "responseTime": "响应时间",
+    "ttfb": "TTFB",
+    "ttfbFull": "首字节时间",
+    "redirects": "重定向链路",
+    "noRedirects": "无重定向",
+    "tls": "TLS / SSL",
+    "tlsValid": "有效",
+    "tlsExpired": "已过期",
+    "tlsNone": "未使用 HTTPS",
+    "tlsIssuer": "颁发机构",
+    "tlsExpiry": "到期时间",
+    "headers": "响应头",
+    "ip": "服务器 IP",
+    "server": "服务器",
+    "contentType": "内容类型",
+    "copyUrl": "复制链接",
+    "share": "分享",
+    "copied": "已复制！"
+  },
+  "errors": {
+    "invalidUrl": "请输入有效的 URL（如 https://example.com）",
+    "fetchFailed": "无法访问该 URL，服务器可能不可达。",
+    "timeout": "请求超时（超过 15 秒）。",
+    "generic": "出现了一些问题，请重试。"
+  },
+  "statusCodes": {
+    "title": "HTTP 状态码",
+    "subtitle": "每个 HTTP 状态码的快速参考。",
+    "1xx": "信息性",
+    "2xx": "成功",
+    "3xx": "重定向",
+    "4xx": "客户端错误",
+    "5xx": "服务器错误"
+  },
+  "footer": {
+    "tagline": "为关心可靠性的开发者而生。",
+    "links": "链接",
+    "legal": "法律",
+    "privacy": "隐私政策",
+    "terms": "服务条款"
+  }
+}

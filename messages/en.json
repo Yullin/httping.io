@@ -1,0 +1,65 @@
+{
+  "meta": {
+    "title": "httping.io — HTTP Ping & Diagnostics Tool",
+    "description": "Instantly check HTTP status, response time, TTFB, redirect chains and TLS certificate for any URL. Free online HTTP diagnostic tool for developers."
+  },
+  "nav": {
+    "tool": "HTTP Check",
+    "docs": "Docs",
+    "github": "GitHub"
+  },
+  "hero": {
+    "badge": "Free & Open Source",
+    "title": "HTTP Ping",
+    "titleHighlight": "Diagnostics Tool",
+    "subtitle": "Instantly inspect any URL — status code, response time, TTFB, redirect chain, TLS certificate and response headers. Like ping, but for HTTP.",
+    "placeholder": "https://example.com",
+    "button": "Check",
+    "buttonLoading": "Checking...",
+    "exampleLabel": "Try an example:"
+  },
+  "results": {
+    "title": "Results",
+    "status": "HTTP Status",
+    "responseTime": "Response Time",
+    "ttfb": "TTFB",
+    "ttfbFull": "Time to First Byte",
+    "redirects": "Redirects",
+    "noRedirects": "No redirects",
+    "tls": "TLS / SSL",
+    "tlsValid": "Valid",
+    "tlsExpired": "Expired",
+    "tlsNone": "No HTTPS",
+    "tlsIssuer": "Issuer",
+    "tlsExpiry": "Expires",
+    "headers": "Response Headers",
+    "ip": "Server IP",
+    "server": "Server",
+    "contentType": "Content-Type",
+    "copyUrl": "Copy URL",
+    "share": "Share",
+    "copied": "Copied!"
+  },
+  "errors": {
+    "invalidUrl": "Please enter a valid URL (e.g. https://example.com)",
+    "fetchFailed": "Failed to reach the URL. The server may be unreachable.",
+    "timeout": "Request timed out after 15 seconds.",
+    "generic": "Something went wrong. Please try again."
+  },
+  "statusCodes": {
+    "title": "HTTP Status Codes",
+    "subtitle": "Quick reference for every HTTP status code.",
+    "1xx": "Informational",
+    "2xx": "Success",
+    "3xx": "Redirection",
+    "4xx": "Client Error",
+    "5xx": "Server Error"
+  },
+  "footer": {
+    "tagline": "Built for developers who care about reliability.",
+    "links": "Links",
+    "legal": "Legal",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  }
+}
