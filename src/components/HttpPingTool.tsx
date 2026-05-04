@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Search, Loader2, Globe, ShieldCheck, ShieldX, ShieldOff, Clock, ArrowRight, ChevronDown, ChevronUp, Copy, Check } from "lucide-react";
 import clsx from "clsx";
 
@@ -119,6 +120,8 @@ function timingColor(ms: number): string {
 }
 
 export default function HttpPingTool() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [lang, setLang] = useState<Lang>("en");
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -127,6 +130,20 @@ export default function HttpPingTool() {
   const [showHeaders, setShowHeaders] = useState(false);
   const [copied, setCopied] = useState(false);
   const tx = t[lang];
+  const didAutoCheck = useRef(false);
+
+  // 读取 ?url= 参数，自动填入并触发检测
+  useEffect(() => {
+    if (didAutoCheck.current) return;
+    const paramUrl = searchParams.get("url");
+    if (paramUrl && paramUrl.trim()) {
+      didAutoCheck.current = true;
+      setUrl(paramUrl.trim());
+      // 稍作延迟确保 state 更新后再触发检测
+      setTimeout(() => check(paramUrl.trim()), 100);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const check = useCallback(async (targetUrl?: string) => {
     const input = (targetUrl || url).trim();
@@ -136,6 +153,10 @@ export default function HttpPingTool() {
     setError(null);
     setResult(null);
     setShowHeaders(false);
+
+    // 更新地址栏 URL 参数，方便分享
+    const normalized = input.startsWith("http") ? input : `https://${input}`;
+    router.replace(`/?url=${encodeURIComponent(normalized)}`, { scroll: false });
 
     try {
       const res = await fetch(`/api/check?url=${encodeURIComponent(input)}`);
@@ -156,15 +177,15 @@ export default function HttpPingTool() {
     } finally {
       setLoading(false);
     }
-  }, [url, tx]);
+  }, [url, tx, router]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") check();
   };
 
   const handleCopy = () => {
-    const shareUrl = `${window.location.origin}?url=${encodeURIComponent(url)}`;
-    navigator.clipboard.writeText(shareUrl);
+    // 直接复制当前地址栏（check 后已经更新为带 ?url= 的链接）
+    navigator.clipboard.writeText(window.location.href);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

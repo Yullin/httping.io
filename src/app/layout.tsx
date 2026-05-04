@@ -42,11 +42,37 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "httping.io",
+    url: "https://www.httping.io",
+    description: "Free online HTTP ping and diagnostics tool. Check HTTP status codes, response time, TTFB, redirect chains and TLS certificates for any URL.",
+    applicationCategory: "DeveloperApplication",
+    operatingSystem: "Any",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    creator: {
+      "@type": "Organization",
+      name: "httping.io",
+      url: "https://www.httping.io",
+    },
+  };
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-[#0a0a0f]">
         {children}
         <Analytics />
