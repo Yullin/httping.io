@@ -1,26 +1,21 @@
-<svg viewBox="0 0 64 64" width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+    <linearGradient id="freshGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06B6D4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#34D399;stop-opacity:1" />
     </linearGradient>
   </defs>
-
-  <!-- Background circle -->
-  <circle cx="32" cy="32" r="30" fill="#121212" stroke="url(#grad)" stroke-width="2"/>
-
-  <!-- Pulse rings (simplified) -->
-  <circle cx="32" cy="32" r="10" fill="none" stroke="url(#grad)" stroke-width="1" opacity="0.6">
-    <animate attributeName="r" from="10" to="28" dur="2s" repeatCount="indefinite"/>
-    <animate attributeName="opacity" from="0.6" to="0" dur="2s" repeatCount="indefinite"/>
+  
+  <!-- Signal waves -->
+  <circle cx="32" cy="32" r="10" fill="none" stroke="url(#freshGradient)" stroke-width="1.5" opacity="0.5">
+    <animate attributeName="r" from="10" to="24" dur="2s" repeatCount="indefinite" />
+    <animate attributeName="opacity" from="0.5" to="0" dur="2s" repeatCount="indefinite" />
   </circle>
-
-  <!-- Globe -->
-  <circle cx="32" cy="32" r="8" fill="none" stroke="url(#grad)" stroke-width="1.5"/>
-  <ellipse cx="32" cy="32" rx="8" ry="4" fill="none" stroke="url(#grad)" stroke-width="1"/>
-  <line x1="24" y1="32" x2="40" y2="32" stroke="url(#grad)" stroke-width="0.8"/>
-  <line x1="32" y1="24" x2="32" y2="40" stroke="url(#grad)" stroke-width="0.8"/>
-
+  <circle cx="32" cy="32" r="10" fill="none" stroke="url(#freshGradient)" stroke-width="1.5" opacity="0.3">
+    <animate attributeName="r" from="10" to="30" dur="2s" begin="0.5s" repeatCount="indefinite" />
+    <animate attributeName="opacity" from="0.3" to="0" dur="2s" begin="0.5s" repeatCount="indefinite" />
+  </circle>
+  
   <!-- Center dot -->
-  <circle cx="32" cy="32" r="1.5" fill="#06b6d4"/>
+  <circle cx="32" cy="32" r="5" fill="url(#freshGradient)" />
 </svg>
