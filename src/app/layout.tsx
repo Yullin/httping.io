@@ -19,6 +19,10 @@ export const metadata: Metadata = {
   keywords: ["HTTP check", "HTTP ping", "URL checker", "response time", "TTFB", "TLS check", "HTTP status code", "redirect checker"],
   authors: [{ name: "httping.io" }],
   metadataBase: new URL("https://httping.io"),
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+  },
   openGraph: {
     title: "httping.io — HTTP Ping & Diagnostics Tool",
     description: "Instantly check HTTP status, response time, TTFB, redirect chains and TLS certificates for any URL.",
@@ -73,7 +77,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-[#0a0a0f]">
+      <body className="min-h-full flex flex-col bg-background">
         {children}
         <Analytics />
       </body>
