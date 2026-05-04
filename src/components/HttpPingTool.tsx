@@ -215,9 +215,57 @@ export default function HttpPingTool() {
         "max-w-4xl mx-auto px-6 text-center",
         result ? "pt-20 pb-12" : "flex-1 flex flex-col items-center justify-center"
       )}>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-sm mb-6">
-          <div className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
-          {tx.badge}
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-surface-1 border border-surface-2 rounded-full mb-6">
+          {/* io Logo - i inside O circle */}
+          <div className="relative" style={{width: '48px', height: '48px'}}>
+            {/* O - outer circle with pulse */}
+            <div 
+              className="absolute rounded-full"
+              style={{
+                width: '100%',
+                height: '100%',
+                border: '2.5px solid #34D399',
+                animation: 'pulse-ring 2.5s ease-in-out infinite'
+              }}
+            />
+            {/* O - outer subtle circle */}
+            <div 
+              className="absolute rounded-full"
+              style={{
+                width: 'calc(100% - 8px)',
+                height: 'calc(100% - 8px)',
+                top: '4px',
+                left: '4px',
+                border: '1.5px solid rgba(6, 182, 212, 0.4)'
+              }}
+            />
+            {/* i - stem (vertical line inside circle, positioned lower) */}
+            <div 
+              className="absolute"
+              style={{
+                width: '3px',
+                height: '18px',
+                backgroundColor: '#06B6D4',
+                borderRadius: '1.5px',
+                left: '50%',
+                top: '55%',
+                transform: 'translate(-50%, -50%) translateY(3px)'
+              }}
+            />
+            {/* i - dot (blinks, at top of stem) */}
+            <div 
+              className="absolute rounded-full"
+              style={{
+                width: '6px',
+                height: '6px',
+                backgroundColor: '#06B6D4',
+                left: '50%',
+                top: '30%',
+                transform: 'translate(-50%, -50%)',
+                animation: 'blink 2s ease-in-out infinite'
+              }}
+            />
+          </div>
         </div>
 
         <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight mb-4">

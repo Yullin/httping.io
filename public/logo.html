@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>httping.io Logo</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: transparent;
+    }
+    
+    .io-logo {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      width: 120px;
+      height: 60px;
+    }
+    
+    /* Letter i */
+    .letter-i {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 30px;
+      height: 60px;
+      position: relative;
+    }
+    
+    .i-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #06B6D4;
+      position: absolute;
+      top: 8px;
+      animation: blink 2s ease-in-out infinite;
+    }
+    
+    .i-stem {
+      width: 4px;
+      height: 30px;
+      background: #06B6D4;
+      border-radius: 2px;
+      position: absolute;
+      top: 22px;
+    }
+    
+    /* Letter O */
+    .letter-o {
+      position: relative;
+      width: 48px;
+      height: 48px;
+    }
+    
+    .o-outer {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 1px solid rgba(6, 182, 212, 0.4);
+    }
+    
+    .o-inner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 64%;
+      height: 64%;
+      border-radius: 50%;
+      border: 2px solid #34D399;
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    
+    /* Animations */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { 
+        width: 64%;
+        height: 64%;
+      }
+      50% { 
+        width: 80%;
+        height: 80%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="io-logo">
+    <div class="letter-i">
+      <div class="i-dot"></div>
+      <div class="i-stem"></div>
+    </div>
+    <div class="letter-o">
+      <div class="o-outer"></div>
+      <div class="o-inner"></div>
+    </div>
+  </div>
+</body>
+</html>
