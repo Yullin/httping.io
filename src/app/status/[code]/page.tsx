@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Globe } from "lucide-react";
-import { STATUS_DB, type StatusInfo } from "../status-db";
+import { STATUS_DB } from "../status-db";
 import clsx from "clsx";
 
 const CATEGORY_COLOR: Record<string, string> = {

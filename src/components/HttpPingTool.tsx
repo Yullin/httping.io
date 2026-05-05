@@ -2,8 +2,11 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Search, Loader2, ShieldCheck, ShieldX, ShieldOff, Clock, ArrowRight, ChevronDown, ChevronUp, Copy, Check, Terminal } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { Loader2, Search, ShieldCheck, ShieldX, ShieldOff, Clock, ArrowRight, ChevronDown, ChevronUp, Copy, Check, Terminal } from "lucide-react";
 import clsx from "clsx";
+import AdBanner from "./AdBanner";
 
 interface RedirectStep {
   url: string;
@@ -135,24 +138,6 @@ function timingColor(ms: number): string {
   return "text-red-400";
 }
 
-// 生成等效 curl 命令
-function generateCurl(url: string, includeHeaders: boolean = true): string {
-  const cmd = ["curl", "-I", "-s", "-L", "--connect-timeout 15"];
-
-  // 添加 User-Agent
-  cmd.push("-H", "User-Agent: httping.io/1.0");
-
-  // 如果要包含 headers 输出
-  if (includeHeaders) {
-    cmd.push("-D", "-");
-  }
-
-  // 添加 URL
-  cmd.push(`"${url}"`);
-
-  return cmd.join(" \\\n  ");
-}
-
 export default function HttpPingTool() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -170,48 +155,16 @@ export default function HttpPingTool() {
   const tx = t[lang];
   const didAutoCheck = useRef(false);
   const didLoadShared = useRef(false);
+  const checkRef = useRef<((targetUrl?: string) => void) | null>(null);
 
-  // 读取 ?url= 参数，自动填入并触发检测
-  useEffect(() => {
-    if (didAutoCheck.current) return;
-    const paramUrl = searchParams.get("url");
-    if (paramUrl && paramUrl.trim()) {
-      didAutoCheck.current = true;
-      setUrl(paramUrl.trim());
-      // 稍作延迟确保 state 更新后再触发检测
-      setTimeout(() => check(paramUrl.trim()), 100);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
-
-  // 读取 ?r= 分享结果参数
-  useEffect(() => {
-    if (didLoadShared.current) return;
-    const sharedResult = searchParams.get("r");
-    if (sharedResult) {
-      try {
-        const decoded = JSON.parse(atob(sharedResult));
-        if (decoded && decoded.url) {
-          didLoadShared.current = true;
-          setIsSharedResult(true);
-          setUrl(decoded.url);
-          setResult(decoded);
-          // 更新页面标题
-          document.title = `${decoded.status} - ${decoded.url} | httping.io`;
-        }
-      } catch {
-        // 无效的分享数据，静默忽略
-      }
-    }
-  }, [searchParams]);
-
-  // 生成分享链接
+  // 生成分享链接（定义在 check 之前）
   const generateShareUrl = (checkResult: CheckResult): string => {
     const encoded = btoa(JSON.stringify(checkResult));
     const baseUrl = window.location.origin;
     return `${baseUrl}?r=${encoded}`;
   };
 
+  // check 函数定义在前，供后续 effects 使用
   const check = useCallback(async (targetUrl?: string) => {
     const input = (targetUrl || url).trim();
     if (!input) return;
@@ -246,6 +199,47 @@ export default function HttpPingTool() {
       setLoading(false);
     }
   }, [url, tx, router]);
+
+  // 保持 checkRef 最新
+  useEffect(() => {
+    checkRef.current = check;
+  }, [check]);
+
+  // 读取 ?url= 参数，自动填入并触发检测
+  useEffect(() => {
+    if (didAutoCheck.current) return;
+    const paramUrl = searchParams.get("url");
+    if (paramUrl && paramUrl.trim()) {
+      didAutoCheck.current = true;
+      // 直接调用 check，不单独 setUrl（check 内部会处理）
+      setTimeout(() => checkRef.current?.(paramUrl.trim()), 0);
+    }
+  }, [searchParams]);
+
+  // 读取 ?r= 分享结果参数
+  useEffect(() => {
+    if (didLoadShared.current) return;
+    const sharedResult = searchParams.get("r");
+    if (sharedResult) {
+      try {
+        const decoded = JSON.parse(atob(sharedResult));
+        if (decoded && decoded.url) {
+          didLoadShared.current = true;
+          // 批量更新状态，避免级联渲染
+          // 使用 setTimeout 将其放到下一个事件循环，避免 effect 中直接 setState
+          setTimeout(() => {
+            setIsSharedResult(true);
+            setUrl(decoded.url);
+            setResult(decoded);
+            // 更新页面标题
+            document.title = `${decoded.status} - ${decoded.url} | httping.io`;
+          }, 0);
+        }
+      } catch {
+        // 无效的分享数据，静默忽略
+      }
+    }
+  }, [searchParams]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") check();
@@ -287,7 +281,7 @@ export default function HttpPingTool() {
       <nav className="border-b border-surface-1 px-6 py-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src="/logo-text.svg" alt="httping.io" className="h-8 w-auto" />
+            <Image src="/logo-text.svg" alt="httping.io" width={160} height={32} className="h-8 w-auto" />
           </div>
           <div className="flex items-center gap-4">
             <button
@@ -299,6 +293,11 @@ export default function HttpPingTool() {
           </div>
         </div>
       </nav>
+
+      {/* Zone 1: Leaderboard Ad - Below nav, above hero */}
+      <div className="max-w-4xl mx-auto px-6 pt-4 pb-2">
+        <AdBanner slot="leaderboard" />
+      </div>
 
       <main className="flex-1 flex flex-col">
       {/* Hero */}
@@ -527,6 +526,11 @@ export default function HttpPingTool() {
             </div>
           </div>
 
+          {/* Zone 2: In-content Ad - After stats, before other results */}
+          <div className="my-4">
+            <AdBanner slot="rectangle" />
+          </div>
+
           {/* URL info */}
           <div className="p-4 rounded-xl bg-surface-1 border border-surface-2 space-y-3">
             <div className="flex items-start gap-3 text-sm">
@@ -658,15 +662,21 @@ export default function HttpPingTool() {
       )}
       </main>
 
+      {/* Zone 3: Footer Banner Ad */}
+      <div className="max-w-4xl mx-auto px-6 py-4">
+        <AdBanner slot="footer" />
+      </div>
+
       {/* Footer */}
       <footer className="border-t border-surface-1 py-8 px-6">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
           <div className="flex items-center gap-2">
-            <img src="/logo-text.svg" alt="httping.io" className="h-5 w-auto" />
+            <Image src="/logo-text.svg" alt="httping.io" width={100} height={20} className="h-5 w-auto" />
             <span className="text-gray-700">·</span>
             <span>Built for developers who care about reliability.</span>
           </div>
           <div className="flex items-center gap-4">
+            <Link href="/status" className="hover:text-gray-300 transition-colors">HTTP Status Codes</Link>
             <a href="https://github.com" target="_blank" rel="noopener" className="hover:text-gray-300 transition-colors">GitHub</a>
             <a href="#" className="hover:text-gray-300 transition-colors">Privacy</a>
           </div>

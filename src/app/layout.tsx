@@ -76,6 +76,15 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* Google AdSense - Only load if configured */}
+        {process.env.NEXT_PUBLIC_ADSENSE_PUB_ID &&
+         process.env.NEXT_PUBLIC_ADSENSE_PUB_ID !== "YOUR_PUBLISHER_ID" && (
+          <script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_PUB_ID}`}
+            crossOrigin="anonymous"
+          />
+        )}
       </head>
       <body className="min-h-full flex flex-col bg-background">
         {children}

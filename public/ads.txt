@@ -1,0 +1,7 @@
+# ads.txt for Google AdSense
+# Learn more: https://support.google.com/adsense/answer/11574662
+
+# Format: domain.com, publisher-id, relationship, certification-authority-id
+# Example: google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+
+google.com, pub-7268840106840339, DIRECT, f08c47fec0942fa0

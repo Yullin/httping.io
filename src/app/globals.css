@@ -69,3 +69,47 @@ body {
 .animate-in {
   animation: var(--animate-fade-in);
 }
+
+/* AdSense styles - prevent CLS */
+.ad-container {
+  position: relative;
+  overflow: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.ad-container ins.adsbygoogle {
+  display: block;
+  background: transparent;
+}
+
+/* Prevent layout shift by reserving space */
+.ad-container[data-slot="leaderboard"] {
+  min-height: 90px;
+  max-height: 90px;
+}
+
+.ad-container[data-slot="rectangle"] {
+  min-height: 250px;
+  max-height: 250px;
+}
+
+.ad-container[data-slot="footer"] {
+  min-height: 60px;
+  max-height: 60px;
+}
+
+/* Hide ads on small screens for better UX */
+@media (max-width: 640px) {
+  .ad-container[data-slot="leaderboard"],
+  .ad-container[data-slot="rectangle"] {
+    display: none;
+  }
+}
+
+/* Show smaller ad on mobile for footer */
+@media (max-width: 640px) {
+  .ad-container[data-slot="footer"] {
+    min-height: 50px;
+    max-height: 50px;
+  }
+}
