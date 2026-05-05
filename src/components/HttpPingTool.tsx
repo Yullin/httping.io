@@ -72,6 +72,11 @@ const t = {
     curlCmd: "cURL Command",
     copyCurl: "Copy",
     curlCopied: "Copied!",
+    shareResult: "Share Result",
+    shareCopied: "Link Copied!",
+    sharedBy: "Shared result",
+    recheck: "Recheck",
+    snapshot: "Result Snapshot",
   },
   zh: {
     badge: "免费开源",
@@ -108,6 +113,11 @@ const t = {
     curlCmd: "cURL 命令",
     copyCurl: "复制",
     curlCopied: "已复制！",
+    shareResult: "分享结果",
+    shareCopied: "链接已复制！",
+    sharedBy: "分享的检测结果",
+    recheck: "重新检测",
+    snapshot: "结果快照",
   },
 };
 
@@ -154,8 +164,12 @@ export default function HttpPingTool() {
   const [showHeaders, setShowHeaders] = useState(false);
   const [copied, setCopied] = useState(false);
   const [curlCopied, setCurlCopied] = useState(false);
+  const [shareUrlCopied, setShareUrlCopied] = useState(false);
+  const [shareUrl, setShareUrl] = useState("");
+  const [isSharedResult, setIsSharedResult] = useState(false);
   const tx = t[lang];
   const didAutoCheck = useRef(false);
+  const didLoadShared = useRef(false);
 
   // 读取 ?url= 参数，自动填入并触发检测
   useEffect(() => {
@@ -169,6 +183,34 @@ export default function HttpPingTool() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
+
+  // 读取 ?r= 分享结果参数
+  useEffect(() => {
+    if (didLoadShared.current) return;
+    const sharedResult = searchParams.get("r");
+    if (sharedResult) {
+      try {
+        const decoded = JSON.parse(atob(sharedResult));
+        if (decoded && decoded.url) {
+          didLoadShared.current = true;
+          setIsSharedResult(true);
+          setUrl(decoded.url);
+          setResult(decoded);
+          // 更新页面标题
+          document.title = `${decoded.status} - ${decoded.url} | httping.io`;
+        }
+      } catch {
+        // 无效的分享数据，静默忽略
+      }
+    }
+  }, [searchParams]);
+
+  // 生成分享链接
+  const generateShareUrl = (checkResult: CheckResult): string => {
+    const encoded = btoa(JSON.stringify(checkResult));
+    const baseUrl = window.location.origin;
+    return `${baseUrl}?r=${encoded}`;
+  };
 
   const check = useCallback(async (targetUrl?: string) => {
     const input = (targetUrl || url).trim();
@@ -196,6 +238,7 @@ export default function HttpPingTool() {
         setError(errMap[data.error] || tx.errorGeneric);
       } else {
         setResult(data);
+        setShareUrl(generateShareUrl(data));
       }
     } catch {
       setError(tx.errorGeneric);
@@ -220,6 +263,22 @@ export default function HttpPingTool() {
     navigator.clipboard.writeText(curlCmd);
     setCurlCopied(true);
     setTimeout(() => setCurlCopied(false), 2000);
+  };
+
+  const handleShare = () => {
+    if (shareUrl) {
+      navigator.clipboard.writeText(shareUrl);
+      setShareUrlCopied(true);
+      setTimeout(() => setShareUrlCopied(false), 2000);
+    }
+  };
+
+  const handleRecheck = () => {
+    setIsSharedResult(false);
+    setShareUrl("");
+    didAutoCheck.current = false;
+    didLoadShared.current = false;
+    check();
   };
 
   return (
@@ -367,15 +426,54 @@ export default function HttpPingTool() {
       {/* Results */}
       {result && (
         <div className="max-w-4xl mx-auto px-6 pb-20 space-y-4 animate-in fade-in duration-500">
+          {/* Snapshot badge for shared results */}
+          {isSharedResult && (
+            <div className="flex items-center justify-between p-3 rounded-xl bg-violet-500/10 border border-violet-500/20">
+              <div className="flex items-center gap-2 text-sm text-violet-400">
+                <span className="text-gray-400">{tx.sharedBy}</span>
+                <span className="text-gray-200">{result.url}</span>
+              </div>
+              <button
+                onClick={handleRecheck}
+                className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg bg-violet-500/20 hover:bg-violet-500/30 text-violet-300 hover:text-violet-200 transition-colors"
+              >
+                <Search className="w-3.5 h-3.5" />
+                {tx.recheck}
+              </button>
+            </div>
+          )}
+
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white">{tx.results}</h2>
-            <button
-              onClick={handleCopy}
-              className="flex items-center gap-2 text-sm text-gray-400 hover:text-foreground transition-colors px-3 py-1.5 rounded-lg border border-surface-2 hover:border-surface-3"
-            >
-              {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
-              {copied ? (lang === "en" ? "Copied!" : "已复制！") : (lang === "en" ? "Copy link" : "复制链接")}
-            </button>
+            <h2 className="text-lg font-semibold text-white">
+              {isSharedResult ? tx.snapshot : tx.results}
+            </h2>
+            <div className="flex items-center gap-2">
+              {!isSharedResult && shareUrl && (
+                <button
+                  onClick={handleShare}
+                  className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/30 text-violet-400 hover:text-violet-300 transition-colors"
+                >
+                  {shareUrlCopied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-green-400" />
+                      <span className="text-green-400">{tx.shareCopied}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>{tx.shareResult}</span>
+                    </>
+                  )}
+                </button>
+              )}
+              <button
+                onClick={handleCopy}
+                className="flex items-center gap-2 text-sm text-gray-400 hover:text-foreground transition-colors px-3 py-1.5 rounded-lg border border-surface-2 hover:border-surface-3"
+              >
+                {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+                {copied ? (lang === "en" ? "Copied!" : "已复制！") : (lang === "en" ? "Copy link" : "复制链接")}
+              </button>
+            </div>
           </div>
 
           {/* Stats grid */}
