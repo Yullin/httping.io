@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Search, Loader2, ShieldCheck, ShieldX, ShieldOff, Clock, ArrowRight, ChevronDown, ChevronUp, Copy, Check } from "lucide-react";
+import { Search, Loader2, ShieldCheck, ShieldX, ShieldOff, Clock, ArrowRight, ChevronDown, ChevronUp, Copy, Check, Terminal } from "lucide-react";
 import clsx from "clsx";
 
 interface RedirectStep {
@@ -69,6 +69,9 @@ const t = {
     errorFailed: "Could not reach the URL. The server may be unreachable.",
     errorTimeout: "Request timed out after 15 seconds.",
     errorGeneric: "Something went wrong. Please try again.",
+    curlCmd: "cURL Command",
+    copyCurl: "Copy",
+    curlCopied: "Copied!",
   },
   zh: {
     badge: "免费开源",
@@ -102,6 +105,9 @@ const t = {
     errorFailed: "无法访问该 URL，服务器可能不可达。",
     errorTimeout: "请求超时（超过 15 秒）。",
     errorGeneric: "出现了一些问题，请重试。",
+    curlCmd: "cURL 命令",
+    copyCurl: "复制",
+    curlCopied: "已复制！",
   },
 };
 
@@ -119,6 +125,24 @@ function timingColor(ms: number): string {
   return "text-red-400";
 }
 
+// 生成等效 curl 命令
+function generateCurl(url: string, includeHeaders: boolean = true): string {
+  const cmd = ["curl", "-I", "-s", "-L", "--connect-timeout 15"];
+
+  // 添加 User-Agent
+  cmd.push("-H", "User-Agent: httping.io/1.0");
+
+  // 如果要包含 headers 输出
+  if (includeHeaders) {
+    cmd.push("-D", "-");
+  }
+
+  // 添加 URL
+  cmd.push(`"${url}"`);
+
+  return cmd.join(" \\\n  ");
+}
+
 export default function HttpPingTool() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -129,6 +153,7 @@ export default function HttpPingTool() {
   const [error, setError] = useState<string | null>(null);
   const [showHeaders, setShowHeaders] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [curlCopied, setCurlCopied] = useState(false);
   const tx = t[lang];
   const didAutoCheck = useRef(false);
 
@@ -188,6 +213,13 @@ export default function HttpPingTool() {
     navigator.clipboard.writeText(window.location.href);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleCopyCurl = (curlUrl: string) => {
+    const curlCmd = `curl -I -s -L --connect-timeout 15 \\\n  -H "User-Agent: httping.io/1.0" \\\n  -D - \\\n  "${curlUrl}"`;
+    navigator.clipboard.writeText(curlCmd);
+    setCurlCopied(true);
+    setTimeout(() => setCurlCopied(false), 2000);
   };
 
   return (
@@ -471,6 +503,38 @@ export default function HttpPingTool() {
               </div>
             </div>
           )}
+
+          {/* cURL Command */}
+          <div className="p-4 rounded-xl bg-surface-1 border border-surface-2">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2 text-sm text-gray-400">
+                <Terminal className="w-4 h-4" />
+                <span>{tx.curlCmd}</span>
+              </div>
+              <button
+                onClick={() => handleCopyCurl(result.url)}
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-surface-2 hover:bg-surface-3 text-gray-300 hover:text-white transition-colors border border-surface-3"
+              >
+                {curlCopied ? (
+                  <>
+                    <Check className="w-3 h-3 text-green-400" />
+                    <span className="text-green-400">{tx.curlCopied}</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3 h-3" />
+                    <span>{tx.copyCurl}</span>
+                  </>
+                )}
+              </button>
+            </div>
+            <pre className="text-xs text-gray-300 font-mono overflow-x-auto whitespace-pre-wrap break-all leading-relaxed bg-black/30 rounded-lg p-3">
+{`curl -I -s -L --connect-timeout 15 \\
+  -H "User-Agent: httping.io/1.0" \\
+  -D - \\
+  "${result.url}"`}
+            </pre>
+          </div>
 
           {/* Headers */}
           <div className="p-4 rounded-xl bg-surface-1 border border-surface-2">
